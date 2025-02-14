@@ -59,7 +59,7 @@ jobs:
         ansible-playbook -i inventories/localhost playbook.yml --extra-vars "job_max_cores=$(($(nproc) - $RESERVED_CORES))" --extra-vars "job_max_mem=$(($(free -m | awk '/^Mem:/{print $2}') - $RESERVED_MEM_GB))" --extra-vars "application=galaxy" --extra-vars "galaxy_api_key=${{ steps.api-key.outputs.key }}"
 
     - name: Check the pods
-      run: kubectl get pods -A
+      run: KUBECONFIG=/home/ubuntu/.kube/config kubectl get pods -A
 
     - name: Check the Galaxy version
       run: curl -s http://localhost:8080/api/version

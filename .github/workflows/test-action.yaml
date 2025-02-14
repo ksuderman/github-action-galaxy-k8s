@@ -39,6 +39,8 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
 
     - name: Install Ansible
       run: pip install ansible
@@ -61,5 +63,5 @@ jobs:
 
     - name: Check the Galaxy version
       run: curl -s http://localhost:8080/api/version
-      
+
   

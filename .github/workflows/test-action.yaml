@@ -33,28 +33,26 @@ jobs:
   run:
     name: Install Kubernetes and Galaxy
     runs-on: ubuntu-latest
-  steps:
-    using: "composite"
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
 
-      - name: Install Ansible
-        run: pip install ansible
+    - name: Install Ansible
+      run: pip install ansible
 
-      - name: Install the playbook
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.playbook-repo }}
-          ref: ${{ inputs.playbook-branch }}
+    - name: Install the playbook
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.playbook-repo }}
+        ref: ${{ inputs.playbook-branch }}
 
-      - name: Run the playbook
-        shell: bash
-        run: |
-          cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
-          ansible-playbook -i inventories/localhost playbook.yml --extra-vars "job_max_cores=$(($(nproc) - $RESERVED_CORES))" --extra-vars "job_max_mem=$(($(free -m | awk '/^Mem:/{print $2}') - $RESERVED_MEM_GB))" --extra-vars "application=galaxy" --extra-vars "galaxy_api_key=${{ steps.api-key.outputs.key }}"
-
-     
+    - name: Run the playbook
+      shell: bash
+      run: |
+        cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
+        ansible-playbook -i inventories/localhost playbook.yml --extra-vars "job_max_cores=$(($(nproc) - $RESERVED_CORES))" --extra-vars "job_max_mem=$(($(free -m | awk '/^Mem:/{print $2}') - $RESERVED_MEM_GB))" --extra-vars "application=galaxy" --extra-vars "galaxy_api_key=${{ steps.api-key.outputs.key }}"
+  
+  

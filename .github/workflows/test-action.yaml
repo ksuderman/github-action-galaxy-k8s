@@ -58,6 +58,12 @@ jobs:
         cat inventories/localhost 
         ansible-playbook -i inventories/localhost playbook.yml --extra-vars "job_max_cores=$(($(nproc) - $RESERVED_CORES))" --extra-vars "job_max_mem=$(($(free -m | awk '/^Mem:/{print $2}') - $RESERVED_MEM_GB))" --extra-vars "application=galaxy" --extra-vars "galaxy_api_key=${{ steps.api-key.outputs.key }}"
 
+    - name: Check the kubeconfig
+      run: cat /home/ubuntu/.kube/config
+
+    - name: Check the nodes
+      run: sudo kubectl get nodes
+
     - name: Check the pods
       run: KUBECONFIG=/home/ubuntu/.kube/config kubectl get pods -A
 

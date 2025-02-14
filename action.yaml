@@ -1,0 +1,99 @@
+name: Install Kubernetes and Galaxy
+description: "Set up a Galaxy instance to use for testing tools and workflows"
+
+inputs:
+  playbook-repo:
+    description: 'Playbook repository. Just include the org and repo name'
+    default: 'galaxyproject/galaxy-k8s-boot'
+    required: false
+  playbook-ref:
+    description: 'Branch of the playbook repository to use. This should point to a stable tag and not a moving branch like master or main.'
+    default: 'master'
+    required: false
+  reserved-cores:
+    description: 'Number of cores to reserve for the system'
+    default: 2
+    required: false
+  reserved-mem-gb:
+    description: 'Amount of memory to reserve for the system in GB'
+    default: 6
+    required: false
+  api-key:
+    description: 'API key to use for the Galaxy instance'
+    default: changeme
+    required: false
+  values_file:
+    description: 'Values file to use for the Galaxy Helm chart'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Ansible
+      shell: bash
+      run: pip install ansible
+
+    - name: Clone the playbook
+      shell: bash
+      run: |
+        git clone https://github.com/${{ inputs.playbook-repo }} --branch ${{ inputs.playbook-ref }} --depth 1 /tmp/playbook
+
+    - name: Calculate the number of cores and memory available
+      id: values
+      shell: bash
+      run: |
+        echo "cores=$(($(nproc) - ${{ inputs.reserved-cores }} ))" >> $GITHUB_OUTPUT
+        echo "memory=$(($(free -m | awk '/^Mem:/{print $2}') - ${{ inputs.reserved-mem-gb }} ))" >> $GITHUB_OUTPUT
+
+    - name: Generate the inventory file
+      shell: bash
+      run: |
+        cd /tmp/playbook
+        cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
+
+    - name: Install custom values file if specified
+      if: ${{ inputs.values_file != ''}}
+      shell: bash
+      run: cp ${{ inputs.values_file }} /tmp/playbook/values/accp.yml
+
+    - name: API key
+      shell: bash
+      run: |
+        echo "api_key: ${{ inputs.api-key }}"
+
+    - name: Run the playbook
+      shell: bash
+      run: |
+        cd /tmp/playbook
+        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}"
+
+    - name: Check the nodes and pods
+      shell: bash
+      run: |
+        echo "*** Checking the nodes ***"
+        sudo kubectl get nodes
+        echo "*** Checking the node resources ***"
+        sudo kubectl describe nodes
+
+    - name: Wait for deployments to rollout
+      shell: bash
+      run: |
+        echo "Waiting for the deployments."
+        for deployment in $(sudo kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do \
+          sudo kubectl rollout status deployment $deployment -n galaxy --watch --timeout=15m; \
+        done
+
+    - name: Check the pods
+      shell: bash
+      run: sudo kubectl get pods -A
+
+    - name: Get the Galaxy version
+      shell: bash
+      run: curl -s http://localhost/api/version | jq
+
+     

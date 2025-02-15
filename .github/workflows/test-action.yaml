@@ -73,6 +73,6 @@ jobs:
       run: sudo kubectl get pods -A
 
     - name: Get the Galaxy version
-      run: curl -s http://localhost/api/version
+      run: curl -s http://localhost/api/version | jq
 
   

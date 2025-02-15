@@ -68,10 +68,11 @@ jobs:
       shell: bash
       run: |
         echo "Waiting for the deployments."
-        for deployment in $(kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do
-          echo "Waiting for $deployment"
-    	  # sudo kubectl rollout status deployment $deployment -n galaxy --watch          
-        done
+#        for deployment in $(kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do
+#          echo "Waiting for $deployment"
+#    	  # sudo kubectl rollout status deployment $deployment -n galaxy --watch
+#        done
+        sleep 300
         echo "Done"
         
     - name: Check the pods

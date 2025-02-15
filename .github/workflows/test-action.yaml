@@ -61,14 +61,14 @@ jobs:
     - name: Check the nodes
       run: sudo kubectl get nodes
 
-#    - name: Wait for all the pods to come online
-#      run: sudo kubectl wait --for=condition=Ready pods --all --timeout=5m
+    - name: Wait for all the pods to come online
+      run: sudo kubectl wait pod --for=condition=Ready --all --timeout=10m
 
-    - name: Wait for deployments to rollout
-      shell: bash
-      run: |
-        echo "Waiting for the deployments."
-        sleep 300
+#    - name: Wait for deployments to rollout
+#      shell: bash
+#      run: |
+#        echo "Waiting for the deployments."
+#        sleep 300
 
     - name: Check the pods
       run: sudo kubectl get pods -A

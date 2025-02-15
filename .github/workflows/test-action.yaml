@@ -40,6 +40,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Inspect the directory
+      run: |
+        pwd
+        ls -al
+        ls -al ../
+        ls -al ../../
+        
     - name: Set up Python
       uses: actions/setup-python@v4
       with:

@@ -68,7 +68,7 @@ jobs:
       run: |
         echo "Waiting for the deployments."
         for deployment in $(kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do
-    	  sudo kubectl rollout status deployment $deployment -n $NAMESPACE --watch
+    	    sudo kubectl rollout status deployment $deployment -n galaxy --watch
           echo "Deployment $deployment is ready."
         done
 

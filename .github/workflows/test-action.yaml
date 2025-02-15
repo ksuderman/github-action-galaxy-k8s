@@ -67,12 +67,12 @@ jobs:
       shell: bash
       run: |
         echo "Waiting for the deployments."
-        for deployment in $(kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do kubectl rollout status deployment $deployment -n galaxy --watch ; echo "Deployed $deployment" ; done
+        for deployment in $(sudo kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do sudo kubectl rollout status deployment $deployment -n galaxy --watch ; echo "Deployed $deployment" ; done
 
-    - name: Check the pods
+    - name: Check the pods again
       run: sudo kubectl get pods -A
 
-    - name: Check the Galaxy version
+    - name: Get the Galaxy version
       run: curl -s http://localhost/api/version
 
   

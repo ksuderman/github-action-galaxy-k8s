@@ -62,7 +62,7 @@ jobs:
       run: sudo kubectl get nodes
 
     - name: Wait for all the pods to come online
-      run: sudo kubectl wait pod --for=condition=Ready --all --timeout=10m
+      run: sudo kubectl wait pod --for=condition=Ready --all --timeout=10m -n galaxy
 
 #    - name: Wait for deployments to rollout
 #      shell: bash

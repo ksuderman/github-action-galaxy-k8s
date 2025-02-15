@@ -65,6 +65,7 @@ jobs:
 #      run: sudo kubectl wait --for=condition=Ready pods --all --timeout=5m
 
     - name: Wait for deployments to rollout
+      shell: bash
       run: |
         echo "Waiting for the deployments."
         for deployment in $(kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do

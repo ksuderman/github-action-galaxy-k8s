@@ -47,6 +47,7 @@ runs:
 
     - name: Stash the values file if specified
       if: ${{ inputs.values_file != ''}}
+      shell: bash
       run: cp ${{ inputs.values_file }} /tmp
 
     - name: Install the playbook

@@ -40,13 +40,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Inspect the directory
-      run: |
-        pwd
-        ls -al
-        ls -al ../
-        ls -al ../../
-        
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -55,12 +48,20 @@ jobs:
     - name: Install Ansible
       run: pip install ansible
 
+    - name: Save teh values before checking out the playbook
+      if: ${{ inputs.values_file != ''}}
+      run: cp ${{ inputs.values_file }} /tmp
+
     - name: Install the playbook
       uses: actions/checkout@v4
       with:
         repository: ${{ inputs.playbook-repo }}
         ref: ${{ inputs.playbook-branch }}
 
+    - name: Restore the values after checking out the playbook
+      if: ${{ inputs.values_file != ''}}
+      run: cp /tmp/${{ inputs.values_file }} values/accp.yml
+      
     - name: Calculate the number of cores and memory available
       id: values
       run: |

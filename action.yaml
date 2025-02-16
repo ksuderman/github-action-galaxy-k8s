@@ -29,9 +29,9 @@ inputs:
     description: 'Values to use for the Galaxy Helm chart'
     required: false
 
-env:
-  RESERVED_CORES: ${{ inputs.reserved-cores }}
-  RESERVED_MEM_GB: ${{ inputs.reserved-mem-gb }}
+#env:
+#  RESERVED_CORES: ${{ inputs.reserved-cores }}
+#  RESERVED_MEM_GB: ${{ inputs.reserved-mem-gb }}
 
 runs:
   using: "composite"

@@ -42,6 +42,7 @@ runs:
         python-version: '3.12'
 
     - name: Install Ansible
+      shell: bash
       run: pip install ansible
 
     - name: Install the playbook
@@ -52,6 +53,7 @@ runs:
 
     - name: Calculate the number of cores and memory available
       id: values
+      shell: bash
       run: |
         echo "cores=$(($(nproc) - ${{ inputs.reserved-cores }} ))" >> $GITHUB_OUTPUT
         echo "memory=$(($(free -m | awk '/^Mem:/{print $2}') - ${{ inputs.reserved-mem-gb }} ))" >> $GITHUB_OUTPUT
@@ -72,6 +74,7 @@ runs:
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
 
     - name: Check the nodes
+      shell: bash
       run: |
         sudo kubectl get nodes
         sudo kubectl get pods -A
@@ -85,9 +88,11 @@ runs:
         done
 
     - name: Check the pods again
+      shell: bash
       run: sudo kubectl get pods -A
 
     - name: Get the Galaxy version
+      shell: bash
       run: curl -s http://localhost/api/version | jq
 
      

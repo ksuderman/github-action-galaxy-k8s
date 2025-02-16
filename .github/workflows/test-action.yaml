@@ -61,7 +61,7 @@ jobs:
     - name: Restore the values after checking out the playbook
       if: ${{ inputs.values_file != ''}}
       run: cp /tmp/${{ inputs.values_file }} values/accp.yml
-      
+
     - name: Calculate the number of cores and memory available
       id: values
       run: |
@@ -70,22 +70,22 @@ jobs:
 
     - name: Run the playbook
       shell: bash
-      if: ${{ inputs.values_file == ''}}
+#      if: ${{ inputs.values_file == ''}}
       run: |
         cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}"
 
-    - name: Run the playbook with optional values
-      shell: bash
-      if: ${{ inputs.values_file != ''}}
-      run: |
-        pwd
-        ls -al
-        ls -al ../
-        ls -al ../../
-        cp ${{ inputs.values_file }} values
-        cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
-        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
+#    - name: Run the playbook with optional values
+#      shell: bash
+#      if: ${{ inputs.values_file != ''}}
+#      run: |
+#        pwd
+#        ls -al
+#        ls -al ../
+#        ls -al ../../
+#        cp ${{ inputs.values_file }} values
+#        cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
+#        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
 
 #    - name: Run the playbook
 #      shell: bash

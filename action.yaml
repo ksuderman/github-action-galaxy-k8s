@@ -70,25 +70,25 @@ runs:
 
     - name: Run the playbook
       shell: bash
-      if: ${{ inputs.values == '' && inputs.values_file == ''}}
+#      if: ${{ inputs.values == '' && inputs.values_file == ''}}
       run: |
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}"
 
-    - name: Run the playbook with optional values
-      shell: bash
-      if: ${{ inputs.values != ''}}
-      run: |
-        echo ${{ inputs.values }} > values/accp.yml
-        cat values/accp.yml
-        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
-
-    - name: Run the playbook with optional values from a file
-      shell: bash
-      if: ${{ inputs.values_file != ''}}
-      run: |
-        cp /tmp/${{ inputs.values_file }} values/accp.yml
+#    - name: Run the playbook with optional values
+#      shell: bash
+#      if: ${{ inputs.values != ''}}
+#      run: |
+#        echo ${{ inputs.values }} > values/accp.yml
 #        cat values/accp.yml
-        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
+#        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
+#
+#    - name: Run the playbook with optional values from a file
+#      shell: bash
+#      if: ${{ inputs.values_file != ''}}
+#      run: |
+#        cp /tmp/${{ inputs.values_file }} values/accp.yml
+#        cat values/accp.yml
+#        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
 
     - name: Check the nodes
       shell: bash

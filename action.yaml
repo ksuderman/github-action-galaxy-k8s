@@ -107,7 +107,7 @@ runs:
         for deployment in $(sudo kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do \
           sudo kubectl rollout status deployment $deployment -n galaxy --watch --timeout=15m; \
           sudo kubectl get pods -n galaxy ; \
-          sudo describe nodes ; \
+          sudo kubectl describe nodes ; \
         done
 
     - name: Check the pods again

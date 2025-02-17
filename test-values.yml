@@ -41,6 +41,7 @@ rabbitmq:
 configs:
   galaxy.yml:
     galaxy:
+      admin_users: "admin@example.com"
       require_login: false
       show_welcome_with_login: true
       allow_user_creation: true

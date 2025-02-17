@@ -93,8 +93,12 @@ runs:
     - name: Check the nodes
       shell: bash
       run: |
+        echo "*** Checking the nodes ***"
         sudo kubectl get nodes
+        echo "*** Checking the pods ***"
         sudo kubectl get pods -A
+        echo "*** Checking the node resources ***"
+        sudo kubectl describe nodes
 
     - name: Wait for deployments to rollout
       shell: bash

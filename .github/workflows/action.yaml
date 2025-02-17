@@ -8,22 +8,22 @@ on:
         description: 'Playbook repository. Just include the org and repo name'
         type: string
         default: 'galaxyproject/galaxy-k8s-boot'
-        required: true
+        required: false
       playbook-branch:
         description: 'Branch of the playbook repository to use. This should point to a stable tag and not a moving branch like master or main.'
         default: 'master'
         type: string
-        required: true
+        required: false
       reserved-cores:
         description: 'Number of cores to reserve for the system'
         default: 2
         type: number
-        required: true
+        required: false
       reserved-mem-gb:
         description: 'Amount of memory to reserve for the system in GB'
         default: 6
         type: number
-        required: true
+        required: false
       api-key:
         description: 'API key to use for the Galaxy instance'
         default: changeme

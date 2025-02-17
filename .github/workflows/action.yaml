@@ -6,26 +6,32 @@ on:
     inputs:
       playbook-repo:
         description: 'Playbook repository. Just include the org and repo name'
+        type: string
         default: 'galaxyproject/galaxy-k8s-boot'
         required: true
       playbook-branch:
         description: 'Branch of the playbook repository to use. This should point to a stable tag and not a moving branch like master or main.'
         default: 'master'
+        type: string
         required: true
       reserved-cores:
         description: 'Number of cores to reserve for the system'
         default: 2
+        type: integer
         required: true
       reserved-mem-gb:
         description: 'Amount of memory to reserve for the system in GB'
         default: 6
+        type: integer
         required: true
       api-key:
         description: 'API key to use for the Galaxy instance'
         default: changeme
+        type: string
         required: true
       values_file:
         description: 'Values file to use for the Galaxy Helm chart'
+        type: string
         required: false
 
 env:

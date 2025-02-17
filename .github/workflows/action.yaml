@@ -17,12 +17,12 @@ on:
       reserved-cores:
         description: 'Number of cores to reserve for the system'
         default: 2
-        type: integer
+        type: number
         required: true
       reserved-mem-gb:
         description: 'Amount of memory to reserve for the system in GB'
         default: 6
-        type: integer
+        type: number
         required: true
       api-key:
         description: 'API key to use for the Galaxy instance'

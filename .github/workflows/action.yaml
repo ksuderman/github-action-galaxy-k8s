@@ -104,6 +104,7 @@ jobs:
       run: |
         sudo kubectl get nodes
         sudo kubectl get pods -A
+        sudo kubectl describe nodes
 
     - name: Wait for deployments to rollout
       shell: bash

@@ -64,35 +64,21 @@ runs:
       run: |
         cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
 
+    - name: Restore custom values file if specified
+      if: ${{ inputs.values_file != ''}}
+      shell: bash
+      run: cp /tmp/${{ inputs.values_file }} values/accp.yml
+
     - name: Run the playbook
       shell: bash
-#      if: ${{ inputs.values == '' && inputs.values_file == ''}}
       run: |
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}"
 
-#    - name: Run the playbook with optional values
-#      shell: bash
-#      if: ${{ inputs.values != ''}}
-#      run: |
-#        echo ${{ inputs.values }} > values/accp.yml
-#        cat values/accp.yml
-#        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
-#
-#    - name: Run the playbook with optional values from a file
-#      shell: bash
-#      if: ${{ inputs.values_file != ''}}
-#      run: |
-#        cp /tmp/${{ inputs.values_file }} values/accp.yml
-#        cat values/accp.yml
-#        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}" -e "chart_values_file=${{ inputs.values_file }}"
-
-    - name: Check the nodes
+    - name: Check the nodes and pods
       shell: bash
       run: |
         echo "*** Checking the nodes ***"
         sudo kubectl get nodes
-        echo "*** Checking the pods ***"
-        sudo kubectl get pods -A
         echo "*** Checking the node resources ***"
         sudo kubectl describe nodes
 
@@ -102,11 +88,9 @@ runs:
         echo "Waiting for the deployments."
         for deployment in $(sudo kubectl get deployment -n galaxy -o json | jq -r .items[].metadata.name) ; do \
           sudo kubectl rollout status deployment $deployment -n galaxy --watch --timeout=15m; \
-          sudo kubectl get pods -n galaxy ; \
-          sudo kubectl describe nodes ; \
         done
 
-    - name: Check the pods again
+    - name: Check the pods
       shell: bash
       run: sudo kubectl get pods -A
 

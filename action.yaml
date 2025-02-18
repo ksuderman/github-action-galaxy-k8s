@@ -72,7 +72,7 @@ runs:
     - name: Run the playbook
       shell: bash
       run: |
-        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ steps.api-key.outputs.key }}"
+        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}"
 
     - name: Check the nodes and pods
       shell: bash

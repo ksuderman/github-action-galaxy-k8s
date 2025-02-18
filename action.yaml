@@ -25,9 +25,6 @@ inputs:
   values_file:
     description: 'Values file to use for the Galaxy Helm chart'
     required: false
-  values:
-    description: 'Values to use for the Galaxy Helm chart'
-    required: false
 
 runs:
   using: "composite"
@@ -41,16 +38,19 @@ runs:
       shell: bash
       run: pip install ansible
 
-    - name: Stash the values file if specified
-      if: ${{ inputs.values_file != ''}}
-      shell: bash
-      run: cp ${{ inputs.values_file }} /tmp
+#    - name: Stash the values file if specified
+#      if: ${{ inputs.values_file != ''}}
+#      shell: bash
+#      run: cp ${{ inputs.values_file }} /tmp
 
     - name: Install the playbook
-      uses: actions/checkout@v4
-      with:
-        repository: ${{ inputs.playbook-repo }}
-        ref: ${{ inputs.playbook-branch }}
+      shell: bash
+      run: |
+        git clone https://github.com/${{ inputs.playbook-repo }} --branch ${{ inputs.playbook-branch }} /tmp/playbook
+#      uses: actions/checkout@v4
+#      with:
+#        repository: ${{ inputs.playbook-repo }}
+#        ref: ${{ inputs.playbook-branch }}
 
     - name: Calculate the number of cores and memory available
       id: values
@@ -62,16 +62,18 @@ runs:
     - name: Generate the inventory file
       shell: bash
       run: |
+        cd /tmp/playbook
         cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
 
-    - name: Restore custom values file if specified
+    - name: Install custom values file if specified
       if: ${{ inputs.values_file != ''}}
       shell: bash
-      run: cp /tmp/${{ inputs.values_file }} values/accp.yml
+      run: cp ${{ inputs.values_file }} /tmp/playbook/values/accp.yml
 
     - name: Run the playbook
       shell: bash
       run: |
+        cd /tmp/playbook
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}"
 
     - name: Check the nodes and pods

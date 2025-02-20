@@ -1,5 +1,5 @@
-name: Install Kubernetes and Galaxy
-description: "Set up a Galaxy instance to use for testing tools and workflows"
+name: Test the galaxy-k8s action
+description: "Install Kubernetes and Galaxy using ourself"
 
 on:
   push:
@@ -21,10 +21,21 @@ jobs:
     - name: Check the nodes
       run: |
         sudo kubectl get nodes
-        sudo kubectl get pods -A
         sudo kubectl describe nodes
+        sudo kubectl get pods -A
 
     - name: Get the Galaxy version
       run: curl -s http://localhost/api/version | jq
+
+    - name: Create a Galaxy user
+      run: |
+        echo > /tmp/user.json << EOF
+        {
+          "email": "admin@example.com",
+          "password": "galaxypassword",
+          "username": "admin"
+        }
+        EOF
+        curl -s -H "x-api-key: secret" -H "Content-Type: application/json" -d @/tmp/user.json http://localhost/api/users
 
   

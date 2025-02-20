@@ -1,0 +1,30 @@
+name: Install Kubernetes and Galaxy
+description: "Set up a Galaxy instance to use for testing tools and workflows"
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_call: {}
+
+jobs:
+  run:
+    name: Install Kubernetes and Galaxy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Kubernetes and Galaxy
+      uses: ksuderman/github-action-galaxy-k8s@master
+      with:
+        api-key: secret
+
+    - name: Check the nodes
+      run: |
+        sudo kubectl get nodes
+        sudo kubectl get pods -A
+        sudo kubectl describe nodes
+
+    - name: Get the Galaxy version
+      run: curl -s http://localhost/api/version | jq
+
+  

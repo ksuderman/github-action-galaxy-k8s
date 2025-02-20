@@ -39,7 +39,7 @@ jobs:
         response=$(curl -s -H "x-api-key: secret" -H "Content-Type: application/json" -d @/tmp/user.json http://localhost/api/users)
         echo $response | jq
         error=$(echo $response | jq -r .err_msg)
-        if [[ -n "$error" ]]; then
+        if [[ $error != null ]]; then
             echo "Error creating user: $error"
             exit 1
         fi

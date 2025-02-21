@@ -1,12 +1,11 @@
 name: Test the galaxy-k8s action
-description: "Install Kubernetes and Galaxy using ourself"
+description: "Install Kubernetes and Galaxy using ourselves"
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - master
-
-  workflow_call: {}
 
 jobs:
   run:
@@ -14,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install Kubernetes and Galaxy
-      uses: ksuderman/github-action-galaxy-k8s@master
+      uses: ksuderman/galaxy-k8s-action@master
       with:
         api-key: secret
 

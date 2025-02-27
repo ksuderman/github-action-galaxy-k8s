@@ -22,7 +22,11 @@ inputs:
     description: 'API key to use for the Galaxy instance'
     default: changeme
     required: false
-  values_file:
+  admin-users:
+    description: 'Comma-separated list of Galaxy admin user email addresses'
+    default: ''
+    required: false
+  values-file:
     description: 'Values file to use for the Galaxy Helm chart'
     required: false
 
@@ -57,20 +61,28 @@ runs:
         cat inventories/localhost.template | sed "s/__HOST__/$(curl -s ifconfig.me)/" | sed "s/__USER__/$USER/" > inventories/localhost
 
     - name: Install custom values file if specified
-      if: ${{ inputs.values_file != ''}}
+      if: ${{ inputs.values-file != ''}}
       shell: bash
-      run: cp ${{ inputs.values_file }} /tmp/playbook/values/accp.yml
+      run: cp ${{ inputs.values-file }} /tmp/playbook/values/accp.yml
 
     - name: API key
       shell: bash
       run: |
         echo "api_key: ${{ inputs.api-key }}"
 
-    - name: Run the playbook
+    - name: Run the playbook (no admin users)
+      if: ${{ inputs.admin_users == ''}}
       shell: bash
       run: |
         cd /tmp/playbook
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}"
+
+    - name: Run the playbook (with admin users)
+      if: ${{ inputs.admin_users != ''}}
+      shell: bash
+      run: |
+        cd /tmp/playbook
+        ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}" -e "galaxy_admin_users=${{ inputs.admin-users }}"
 
     - name: Check the nodes and pods
       shell: bash

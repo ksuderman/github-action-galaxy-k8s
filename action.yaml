@@ -60,7 +60,8 @@ runs:
         cd /tmp/playbook
         ip=$(curl -s ifconfig.me) 
         cat inventories/localhost.template | sed "s/__HOST__/$ip/g" | sed "s/__USER__/$USER/g" | sed "s/localhost/$ip/g" > inventories/localhost
-
+        cat inventories/localhost
+        
     - name: Install custom values file if specified
       if: ${{ inputs.values-file != ''}}
       shell: bash

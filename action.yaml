@@ -64,7 +64,9 @@ runs:
     - name: Install custom values file if specified
       if: ${{ inputs.values-file != ''}}
       shell: bash
-      run: cp ${{ inputs.values-file }} /tmp/playbook/values/accp.yml
+      run: |
+        cat ${{ inputs.values-file }}
+        cp ${{ inputs.values-file }} /tmp/playbook/values/accp.yml
 
     - name: API key
       shell: bash
@@ -72,14 +74,14 @@ runs:
         echo "api_key: ${{ inputs.api-key }}"
 
     - name: Run the playbook (no admin users)
-      if: ${{ inputs.admin_users == ''}}
+      if: ${{ inputs.admin-users == ''}}
       shell: bash
       run: |
         cd /tmp/playbook
         ansible-playbook -i inventories/localhost playbook.yml -e "job_max_cores=${{ steps.values.outputs.cores }}" -e "job_max_mem=${{ steps.values.outputs.memory }}" -e "application=galaxy" -e "galaxy_api_key=${{ inputs.api-key }}"
 
     - name: Run the playbook (with admin users)
-      if: ${{ inputs.admin_users != ''}}
+      if: ${{ inputs.admin-users != ''}}
       shell: bash
       run: |
         cd /tmp/playbook
